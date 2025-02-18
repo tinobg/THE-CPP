@@ -3,9 +3,8 @@
 
 #include <iostream>
 #include <vector>
-#include <list>
+#include <deque>
 #include <iterator>
-#include <algorithm>
 
 class PmergeMe {
 public:
@@ -13,8 +12,8 @@ public:
     ~PmergeMe();
 
     void sort(std::vector<int>& arr);
-    void sort(std::list<int>& arr);
-
+    void sort(std::deque<int>& arr);
+    
 private:
     template <typename T>
     void createSortedPairs(T& arr, T& sortedLarger, T& sortedSmaller);
@@ -28,7 +27,7 @@ private:
     template <typename T>
     typename T::iterator binarySearchInsert(T& sorted, int value);
 
-    int jacobsthal(int n);
+    std::vector<int> precomputeJacobsthal(int max);
 };
 
 #endif

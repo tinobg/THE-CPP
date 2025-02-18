@@ -18,8 +18,8 @@ public:
 
     bool loadDatabase(const std::string& filename);
     void processInputFile(const std::string& filename);
+
     float getExchangeRate(const std::string& date);
-    
     static bool isValidDate(const std::string& date);
     static bool isValidValue(const std::string& value);
 };

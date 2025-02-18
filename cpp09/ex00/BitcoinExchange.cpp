@@ -16,29 +16,20 @@ bool BitcoinExchange::loadDatabase(const std::string& filename) {
     std::getline(file, line);
     while (std::getline(file, line)) {
         std::stringstream ss(line);
-        
-        if (!std::getline(ss, date, ',') || !(ss >> rate) || !ss.eof()) {
-            std::cerr << "Error: Malformed line in database: " << line << std::endl;
-            continue; 
-        }
+        if (!std::getline(ss, date, ',') || !(ss >> rate)) continue;
         exchangeRates[date] = rate;
     }
     return !exchangeRates.empty();
 }
 
-
 bool BitcoinExchange::isValidDate(const std::string& date) {
     int year, month, day;
-    if (date.length() != 10 || date[4] != '-' || date[7] != '-')
-		return false;
-    if (sscanf(date.c_str(), "%d-%d-%d", &year, &month, &day) != 3)
-		return false;
-    if (year < 2000 || year > 2030 || month < 1 || month > 12 || day < 1)
-		return false;
+    if (date.length() != 10 || date[4] != '-' || date[7] != '-') return false;
+    if (sscanf(date.c_str(), "%d-%d-%d", &year, &month, &day) != 3) return false;
+    if (year < 2000 || year > 2030 || month < 1 || month > 12 || day < 1) return false;
 
     int daysInMonth[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-    if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) 
-		daysInMonth[1] = 29;
+    if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) daysInMonth[1] = 29;
 
     return day <= daysInMonth[month - 1];
 }
@@ -71,9 +62,7 @@ float BitcoinExchange::getExchangeRate(const std::string& date) {
     std::map<std::string, float>::iterator it = exchangeRates.lower_bound(date);
 
     if (it == exchangeRates.end() || it->first != date) {
-        if (it == exchangeRates.begin()) {
-			return -1;
-		}
+        if (it == exchangeRates.begin()) return -1;
         --it;
     }
     return it->second;
@@ -94,12 +83,7 @@ void BitcoinExchange::processInputFile(const std::string& filename) {
 
     bool hasValidData = false;
     while (std::getline(file, line)) {
-        if (line.empty()) continue;
-
-        if (line.find('|') == std::string::npos) {
-            std::cerr << "Error: Bad input => " << line << std::endl;
-            continue;
-        }
+        if (line.empty() || line.find('|') == std::string::npos) continue;
 
         std::stringstream ss(line);
         std::getline(ss, date, '|');
@@ -114,8 +98,7 @@ void BitcoinExchange::processInputFile(const std::string& filename) {
             std::cerr << "Error: Bad input => " << line << std::endl;
             continue;
         }
-        if (!isValidValue(value))
-			continue;
+        if (!isValidValue(value)) continue;
 
         float val = atof(value.c_str());
         float rate = getExchangeRate(date);
